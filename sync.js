@@ -1,5 +1,4 @@
 const simpleGit = require('simple-git');
-const { glob } = require('glob');
 const path = require('path');
 const fs = require('fs').promises;
 
@@ -74,18 +73,28 @@ async function findGitRepos(searchDirs, excludeDirs) {
     await dashLog(`🔍 Scanning ${dir} for git repos...`);
     
     try {
-      const gitDirs = await glob('**/.git', {
-        cwd: dir,
-        absolute: true,
-        ignore: excludeDirs.map(d => `**/${d}/**`)
-      });
+      const entries = await fs.readdir(dir);
       
-      for (const gitDir of gitDirs) {
-        const repoPath = path.dirname(gitDir);
-        repos.push(repoPath);
+      for (const entry of entries) {
+        if (excludeDirs.includes(entry)) continue;
+        
+        const fullPath = path.join(dir, entry);
+        const gitPath = path.join(fullPath, '.git');
+        
+        try {
+          const stat = await fs.stat(fullPath);
+          if (!stat.isDirectory()) continue;
+          
+          const gitStat = await fs.stat(gitPath);
+          if (gitStat.isDirectory()) {
+            repos.push(fullPath);
+          }
+        } catch (err) {
+          // No .git directory, skip
+        }
       }
       
-      await dashLog(`  Found ${gitDirs.length} repos in ${dir}`);
+      await dashLog(`  Found ${repos.length} repos in ${dir}`);
     } catch (err) {
       await dashLog(`  ⚠️  Error scanning ${dir}: ${err.message}`, 'warn');
     }

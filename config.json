@@ -11,9 +11,9 @@
     "target"
   ],
   "github": {
-    "username": "stifmeister000",
-    "profileRepo": "stifmeister000"
+    "username": "souvik-boop",
+    "profileRepo": "souvik-boop"
   },
   "commitMessage": "🤖 Auto-sync: {date}",
-  "dryRun": true
+  "dryRun": false
 }
