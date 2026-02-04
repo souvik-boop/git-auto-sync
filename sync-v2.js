@@ -35,12 +35,13 @@ async function dashProgress(current, total) {
 
 async function initDashboard() {
   try {
-    const taskId = 'git-auto-sync';
+    const taskId = 'git-sync-bidirectional';
     await fetch(`${DASHBOARD_URL}/api/task/${taskId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: 'Git Bi-Directional Sync',
+        description: 'Syncs repos between local C:\\dev and GitHub (pull, push, clone, cleanup)',
         status: 'running',
         progress: 0,
         total: 0,
