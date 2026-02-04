@@ -1,0 +1,19 @@
+{
+  "searchDirs": [
+    "C:\\dev"
+  ],
+  "excludeDirs": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build",
+    "out",
+    "target"
+  ],
+  "github": {
+    "username": "stifmeister000",
+    "profileRepo": "stifmeister000"
+  },
+  "commitMessage": "🤖 Auto-sync: {date}",
+  "dryRun": true
+}

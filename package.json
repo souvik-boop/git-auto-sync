@@ -1,0 +1,15 @@
+{
+  "name": "git-auto-sync",
+  "version": "1.0.0",
+  "description": "Auto-sync local git repos and beautify GitHub profile",
+  "main": "sync.js",
+  "scripts": {
+    "sync": "node sync.js",
+    "profile": "node update-profile.js",
+    "all": "node sync.js && node update-profile.js"
+  },
+  "dependencies": {
+    "simple-git": "^3.20.0",
+    "glob": "^10.3.10"
+  }
+}
