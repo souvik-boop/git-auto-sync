@@ -7,6 +7,7 @@
     "start": "node sync-v2.js",
     "sync": "node sync.js",
     "sync:v2": "node sync-v2.js",
+    "check": "node check-setup.js",
     "profile": "node update-profile.js",
     "all": "node sync-v2.js && node update-profile.js"
   },
