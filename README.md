@@ -1,130 +1,137 @@
-# Git Auto-Sync + GitHub Profile Beautifier
+# Git Auto-Sync
 
-Automatically sync your local git repositories and keep your GitHub profile looking fresh! 🚀
+Bi-directional Git synchronization tool with GitHub integration.
 
 ## Features
 
-### 🔄 Git Auto-Sync
-- Scans configured directories for git repositories
-- Auto-commits changes with timestamp
-- Pushes to remote
-- Dashboard integration with live progress
-- Dry-run mode for testing
-
-### 🎨 GitHub Profile Generator
-- Generates beautiful README for your GitHub profile
-- Includes stats, activity graphs, trophies
-- Auto-updated timestamp
-- Customizable tech stack badges
+- 🔄 **Bi-directional sync**: Pull from GitHub, push local changes
+- 📥 **Auto-clone**: Automatically clone repos from your GitHub that don't exist locally
+- 🗑️ **Empty repo cleanup**: Detect and delete empty repos (both local and GitHub)
+- 📊 **Dashboard integration**: Real-time progress on Mission Control dashboard
+- ⚡ **Batch processing**: Handle unlimited repositories
 
 ## Setup
 
-### 1. Install Dependencies
+### 1. GitHub Personal Access Token
 
-```bash
-npm install
+You need a GitHub Personal Access Token (PAT) for the tool to work.
+
+**Create a token:**
+1. Go to https://github.com/settings/tokens
+2. Click "Generate new token" → "Generate new token (classic)"
+3. Give it a name like "git-auto-sync"
+4. Select scopes:
+   - ✅ `repo` (full repository access)
+   - ✅ `delete_repo` (if you want to delete empty repos)
+5. Click "Generate token"
+6. **Copy the token immediately** (you won't see it again!)
+
+**Add to config:**
+```json
+{
+  "username": "your-github-username",
+  "githubToken": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  ...
+}
 ```
 
-### 2. Configure
+### 2. Configuration
 
 Edit `config.json`:
 
 ```json
 {
-  "searchDirs": [
-    "C:\\dev",
-    "C:\\Users\\YOUR_USER\\.openclaw\\workspace"
-  ],
-  "github": {
-    "username": "your-github-username",
-    "profileRepo": "your-github-username"
-  }
+  "searchDirs": ["C:\\dev"],           // Where to look for local repos
+  "excludeDirs": ["node_modules"],     // Directories to ignore
+  "username": "souvik-boop",           // Your GitHub username
+  "githubToken": "",                   // Your GitHub PAT (required!)
+  "deleteEmptyRepos": true,            // Auto-delete empty repos
+  "commitMessage": "🤖 Auto-sync: {date}",
+  "dryRun": false                      // Set true to test without changes
 }
 ```
 
-### 3. Set Up GitHub Profile Repo
-
-1. Create a GitHub repository with the **same name as your username**
-   - Example: If your username is `johndoe`, create repo `johndoe`
-2. Clone it to `C:\dev\your-username`
-3. Run the profile generator (it will create/update README.md)
-
 ## Usage
 
-### Sync All Repos
+### Manual Run
 
 ```bash
-npm run sync
+npm start          # Run original sync (push only)
+npm run sync:v2    # Run bi-directional sync (recommended)
 ```
 
-### Update GitHub Profile
+### Scheduled Run
 
-```bash
-npm run profile
-```
+The tool runs automatically at 2 AM daily via OpenClaw cron.
 
-### Do Both
+## What It Does
 
-```bash
-npm run all
-```
+### Phase 1: Fetch GitHub Repos
+- Fetches all repos from your GitHub account
 
-### Dry Run (test without committing)
+### Phase 2: Scan Local Repos
+- Finds all git repositories in configured directories
 
-Edit `config.json` and set `"dryRun": true`
+### Phase 3: Pull Updates
+- For each GitHub repo:
+  - If exists locally → pull latest changes
+  - If not local → clone it
 
-## Automation
+### Phase 4: Push Local Changes
+- For each local repo:
+  - Check if empty (no commits or only README)
+  - If empty and `deleteEmptyRepos` enabled → delete it
+  - Otherwise → commit and push changes
 
-### Daily Auto-Sync with OpenClaw
+## Empty Repo Detection
 
-The cron job will be set up to run daily at 2 AM:
-- Syncs all git repos
-- Updates GitHub profile
-- Shows results on dashboard
+A repo is considered empty if:
+- It has zero commits, OR
+- It has only one commit with just a README file
+
+Empty repos are deleted from:
+- ✅ GitHub (via API)
+- ⚠️ Local (manual deletion required)
 
 ## Dashboard
 
-When running, check http://localhost:3737 to see:
-- Live progress of repos being synced
-- Success/failure status
-- Summary of changes
+View real-time progress at: http://localhost:3737
 
-## Customization
-
-### Commit Message
-
-Edit `config.json`:
-```json
-"commitMessage": "🤖 Auto-sync: {date}"
-```
-
-`{date}` will be replaced with current date.
-
-### Tech Stack Badges
-
-Edit `update-profile.js` and modify the badges section with your technologies.
-
-### Recent Projects
-
-Manually edit the generated README to add your featured projects.
-
-## Tips
-
-- Run `npm run sync` with `dryRun: true` first to see what would change
-- Keep sensitive repos in excluded directories
-- GitHub profile updates may take a few minutes to reflect
+The dashboard shows:
+- Current phase
+- Repos processed
+- Success/failure counts
+- Detailed logs
 
 ## Troubleshooting
 
-**"Failed to push"**
-- Make sure you have git credentials configured
-- Check if remote exists: `git remote -v`
+### "GitHub token not configured"
+Add your GitHub PAT to `config.json` → `githubToken`
 
-**"Not a git repo"**
-- Make sure directories have been `git init`'d
-- Check if `.git` folder exists
+### "Push failed: authentication failed"
+Your GitHub token may be expired or lack `repo` scope
 
-**Profile README not showing**
-- Repo must be named exactly your username
-- Must be public
-- README.md must be in root
+### "Clone failed: authentication failed"
+Public repos clone fine, but private repos need a valid token with `repo` scope
+
+### Rate limiting
+GitHub API has limits:
+- 5000 requests/hour (authenticated)
+- 60 requests/hour (unauthenticated)
+
+This tool stays well under limits.
+
+## Security
+
+**Keep your token safe!**
+- Never commit `config.json` with your token to public repos
+- Add to `.gitignore` if needed
+- Tokens have full access to your repos - treat them like passwords
+
+## Future Enhancements
+
+- [ ] Trash integration for safe local repo deletion
+- [ ] Selective sync (include/exclude patterns)
+- [ ] Multi-account support
+- [ ] Branch-specific sync
+- [ ] Conflict resolution strategies

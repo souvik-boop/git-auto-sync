@@ -4,9 +4,11 @@
   "description": "Auto-sync local git repos and beautify GitHub profile",
   "main": "sync.js",
   "scripts": {
+    "start": "node sync-v2.js",
     "sync": "node sync.js",
+    "sync:v2": "node sync-v2.js",
     "profile": "node update-profile.js",
-    "all": "node sync.js && node update-profile.js"
+    "all": "node sync-v2.js && node update-profile.js"
   },
   "dependencies": {
     "simple-git": "^3.20.0",

@@ -10,10 +10,9 @@
     "out",
     "target"
   ],
-  "github": {
-    "username": "souvik-boop",
-    "profileRepo": "souvik-boop"
-  },
+  "username": "souvik-boop",
+  "githubToken": "",
+  "deleteEmptyRepos": true,
   "commitMessage": "🤖 Auto-sync: {date}",
   "dryRun": false
 }
